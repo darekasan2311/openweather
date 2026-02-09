@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "wifi_connect.h"
+#include "openweather.h"
 
 const int WIFI_RETRY_ATTEMPT = 3;
 int wifi_retry_count = 0;
@@ -232,5 +233,7 @@ void wifi_connection_task()
     }
 
     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    printf("WIFI was initiated ...........\n\n");
+    ESP_LOGI(TAG, "Wifi was initiated");
+    xEventGroupSetBits(data_events, WIFI_READY);
+    vTaskDelete(NULL);
 }

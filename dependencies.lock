@@ -1,4 +1,11 @@
 dependencies:
+  chiehmin/scd41:
+    component_hash: f213e9a556c2a84b4245f33491aea5a0022b4a76f1b9fc9f4703c0abb711b22a
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.0
   espressif/esp_lvgl_port:
     component_hash: f872401524cb645ee6ff1c9242d44fb4ddcfd4d37d7be8b9ed3f4e85a404efcd
     dependencies:
@@ -25,9 +32,10 @@ dependencies:
       type: service
     version: 9.4.0
 direct_dependencies:
+- chiehmin/scd41
 - espressif/esp_lvgl_port
 - idf
 - lvgl/lvgl
-manifest_hash: 2adef90034932caa57a27d852cacfef1866203deb66d3cfec5a7958fa35da209
+manifest_hash: daa35370bc387fd34b6d529370d5ae74e218b720ff08a9486359ea4534719148
 target: esp32
 version: 2.0.0
