@@ -66,6 +66,7 @@ void app_main(void)
             pdMS_TO_TICKS(30000)
         );
         
+        char sensor_buffer[64];
         // Process sensor data
         if (bits & SENSOR_DATA_READY) {
             if (xSemaphoreTake(sensor_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
@@ -74,18 +75,46 @@ void app_main(void)
                 
                 // Do something with sensor data
                 // e.g., log to SD card, send to server, update display
-
+                if (lvgl_port_lock(0)) {
+                    if (label_co2) {
+                        if (g_sensor_data.co2_ppm > 1000) {
+                            lv_obj_set_pos(label_co2, 63, 260);
+                        } else {
+                            lv_obj_set_pos(label_co2, 80, 260);
+                        }
+                        snprintf(sensor_buffer, sizeof(sensor_buffer), "%d", g_sensor_data.co2_ppm);
+                        lv_label_set_text(label_co2, sensor_buffer);
+                    }
+                    if (label_temp) {
+                        snprintf(sensor_buffer, sizeof(sensor_buffer), "%.1f", g_sensor_data.temperature);
+                        lv_label_set_text(label_temp, sensor_buffer);
+                    }
+                    if (label_humid) {
+                        snprintf(sensor_buffer, sizeof(sensor_buffer), "%.1f", g_sensor_data.humidity);
+                        lv_label_set_text(label_humid, sensor_buffer);
+                    }
+                    lvgl_port_unlock();
+                }
 
                 xSemaphoreGive(sensor_mutex);
             }
         }
+        char time_buffer[64];
         if (bits & TIME_DATA_READY) {
             if (xSemaphoreTake(time_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
                 ESP_LOGI(TAG, "Processing time: %02d:%02d:%02d",
                         g_time_data.timeinfo.tm_hour,
                         g_time_data.timeinfo.tm_min,
                         g_time_data.timeinfo.tm_sec);
-                
+
+                if (lvgl_port_lock(0)) {
+                    strftime(time_buffer, sizeof(time_buffer), "%I:%M %p", &g_time_data.timeinfo);
+                    lv_label_set_text(label_time, time_buffer);
+
+                    strftime(time_buffer, sizeof(time_buffer), "%Y/%m/%d", &g_time_data.timeinfo);
+                    lv_label_set_text(label_date, time_buffer);
+                    lvgl_port_unlock();
+                }
                 xSemaphoreGive(time_mutex);
             }
         }
